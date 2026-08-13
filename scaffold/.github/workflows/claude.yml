@@ -1,0 +1,54 @@
+# Claude Code GitHub Action — interactive mode.
+#
+# Responds when someone mentions @claude in an issue comment or a PR review comment (the two
+# event types wired below: `issue_comment` and `pull_request_review_comment`). Does not trigger
+# on a newly opened issue's title/body alone — add an `issues: [opened]` trigger if you want
+# that too. Based on the official example
+# (https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml), with two
+# additions specific to this scaffold:
+#
+#   1. A commented-out `claude_args` block showing how to scope tools explicitly. CI has no
+#      manual-approval prompt (unlike this scaffold's local `.claude/settings.json`, which
+#      defaults to `defaultMode: "default"`), so tool scope has to be set here instead of
+#      relying on a human to click approve. Uncomment and adapt the allowlist to your repo
+#      rather than leaving Claude with full default tool access in CI.
+#   2. A reminder that CLAUDE.md is read identically here as in a local session — see
+#      scaffold/CLAUDE.md's "Before starting a new feature" section, which already tells
+#      Claude to run `feature-spec` before implementing when it's working from an issue that
+#      matches the feature-request template. No extra logic is needed in this file for that.
+#
+# Setup: run `/install-github-app` from Claude Code locally (recommended), or install
+# https://github.com/apps/claude manually and add the ANTHROPIC_API_KEY (or
+# CLAUDE_CODE_OAUTH_TOKEN) secret yourself. See SCAFFOLD-README.md's validation section for
+# how to test this after copying the scaffold into a real repo.
+
+name: Claude Code
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+jobs:
+  claude:
+    if: contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # If you used a Claude subscription (CLAUDE_CODE_OAUTH_TOKEN) instead of an API key,
+          # replace the line above with:
+          # claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          #
+          # claude_args: |
+          #   --allowedTools "Read,Grep,Glob,Edit,Write,Bash(npm test:*),Bash(npm run lint:*)"
+          #   --max-turns 15

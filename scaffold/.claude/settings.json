@@ -1,0 +1,52 @@
+{
+  "//": [
+    "Defaults for working against a large, poorly tested/documented legacy codebase.",
+    "Permission mode defaults to manual approval, not acceptEdits: context-poor agents",
+    "have a higher blast radius on legacy code, and in acceptEdits mode Claude could",
+    "modify IDE config files that IntelliJ auto-executes (JetBrains plugin risk).",
+    "Start narrow and expand deliberately (Anthropic governance guidance) -- use the",
+    "fewer-permission-prompts skill to loosen this later based on real usage, rather",
+    "than starting broad.",
+    "Review this file on the same 3-6 month cadence as CLAUDE.md (see its governance",
+    "section).",
+    "Token/cost note: CLAUDE.md and every skill's frontmatter description are cache-prefix",
+    "content re-sent on every request of every session -- keep additions here and there lean.",
+    "See docs/research/token-cost-optimization-2026.md in the tooling repo this scaffold",
+    "came from."
+  ],
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Skill(characterization-test)",
+      "Skill(codebase-recon)",
+      "Skill(coverage-guided-routing)",
+      "Skill(feature-spec)",
+      "Skill(tdd-implement)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-start-context.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-propose-doc-updates.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

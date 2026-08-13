@@ -1,0 +1,33 @@
+# Example: src/payments/CLAUDE.md
+
+This is an example of a subdirectory-level `CLAUDE.md`, shown here as `subdir-CLAUDE.md.example`
+so it doesn't get picked up as a real config file in the scaffold itself. Copy it to the actual
+subdirectory as `CLAUDE.md` and edit the contents.
+
+It demonstrates the additive-loading pattern from the root `CLAUDE.md`: this file does NOT repeat
+the repo map or global gotchas — Claude already has those from the root file by the time it reads
+this one. It only adds what's local to this subsystem.
+
+---
+
+## Scope
+
+Payment processing and reconciliation. Talks to the external billing provider via `billing_client.py`;
+everything else in this directory assumes that client's retry/idempotency behavior.
+
+## Local test/lint commands (override root)
+
+- Test: `pytest src/payments --maxfail=1` (root's full suite is too slow for iterating here)
+- Lint: same as root
+
+## Local conventions / gotchas
+
+- `Invoice.amount` is stored in cents as an int, not a Decimal — a past bug came from treating it as dollars.
+- `reconcile_batch()` silently swallows `ProviderTimeoutError` and retries once; this is intentional (billing provider is flaky under load), not a bug to "fix" without checking with the DRI first.
+- There is no test for the partial-refund path (`process_refund(partial=True)`). Coverage here is 0%, not the misleadingly-high number the root README claims for the repo overall — do not assume this path works without characterization-testing it first.
+
+## Last updated
+
+Proposed by `stop-propose-doc-updates.sh` on 2026-08-01, reviewed and merged by DRI on 2026-08-03.
+This line exists to demonstrate the documentation feedback loop in action — real subdirectory files
+should keep an honest record of when local notes were last verified against the code.
