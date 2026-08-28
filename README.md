@@ -24,6 +24,15 @@ application.
   that operationalizes those findings. See `scaffold/SCAFFOLD-README.md` for how to copy it into a
   real repo and validate it end-to-end.
 
+## Specs
+
+- [`docs/specs/jira-pipeline/`](docs/specs/jira-pipeline/) — technical spec for taking a JIRA
+  ticket to a merged PR with minimal human touch: JIRA Automation → `repository_dispatch` →
+  GitHub-Actions-only orchestrator (tracking issues + labels as state) → `feature-spec` with a
+  human approval gate → `tdd-implement` → CI/review → JIRA status sync-back. Builds on the scaffold
+  and remote-agent research above rather than replacing them; start at
+  [`00-overview.md`](docs/specs/jira-pipeline/00-overview.md).
+
 ## Diagrams
 
 Visual walkthroughs of the scaffold's control flow — what triggers what, and why — one diagram per
@@ -37,3 +46,5 @@ file:
   greenfield vs. legacy feature development: spec → TDD loop.
 - [`docs/diagrams/subagent-model-routing.md`](docs/diagrams/subagent-model-routing.md) — context
   isolation and model routing across the two subagents.
+- [`docs/diagrams/jira-pipeline-flow.md`](docs/diagrams/jira-pipeline-flow.md) — the JIRA-to-PR
+  pipeline's state machine: tracking issue, approval gate, and JIRA sync-back.
